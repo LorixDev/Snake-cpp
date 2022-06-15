@@ -24,6 +24,8 @@ int main() {
     SetTargetFPS(10);
 
     // Initialize snake
+    Vector2 snake[400] = {};
+
     Vector2 headPos = { 0, 0 };
     Direction headDirection = Direction::DOWN;
 
@@ -63,12 +65,22 @@ int main() {
         if (headPos.y < 0) headPos.y = screenHeight - 20;
         if (headPos.y > screenHeight - 20) headPos.y = 0;
 
+
+        // Update the snake
+        int snakeSize = *(&snake + 1) - snake;
+
+        for (int i = snakeSize; i >= 0 ; i--)
+        {
+            snake[i+1] = snake[i];
+        }
+        snake[0] = headPos;
+
         // If the head hits the apple
 		if (headPos.x == applePos.x && headPos.y == applePos.y) {
             // Move the apple to a new position and increase the score
 			applePos = { GetRandomValue(0, (screenWidth-20)/20)*20, GetRandomValue(0, (screenHeight-20)/20)*20 };
 			score++;
-		}
+		}        
 
         // Converting the score to a string
 		std::stringstream ss;
@@ -83,7 +95,11 @@ int main() {
             DrawText(score_c, screenWidth / 2 - MeasureText(score_c, 40)/2, screenHeight / 2 - 20, 40, GRAY);
 
             // Draw Snake
-            DrawRectangle(headPos.x, headPos.y, 20, 20, DARKGREEN);
+            
+            for (int i = 1; i <= score; i++) {
+                DrawRectangle(snake[i].x, snake[i].y, 20, 20, DARKGREEN);
+            }
+            DrawRectangle(headPos.x, headPos.y, 20, 20, DARKGRAY);
 
             // Draw Apple
             DrawRectangle(applePos.x, applePos.y, 20, 20, MAROON);
